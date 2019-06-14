@@ -51,9 +51,9 @@ public class CartAdapter extends XRecyclerView.Adapter<CartAdapter.MyHolder> {
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
         CartEntity.Result product = cartList.get(i);
 
-        if (product.cartChecked){
+        if (product.cartChecked){//选中
             myHolder.checkBox.setChecked(true);
-        }else{
+        }else{//未选中
             myHolder.checkBox.setChecked(false);
         }
 
@@ -61,7 +61,7 @@ public class CartAdapter extends XRecyclerView.Adapter<CartAdapter.MyHolder> {
         ProductAdapter productAdapter = new ProductAdapter(context,product.shoppingCartList);
 
         myHolder.productRv.setLayoutManager(new LinearLayoutManager(context));
-
+//设置二级适配器
         myHolder.productRv.setAdapter(productAdapter);
         myHolder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override

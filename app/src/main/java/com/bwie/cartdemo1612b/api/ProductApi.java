@@ -14,6 +14,11 @@ import retrofit2.http.Url;
  * 商品相关api
  */
 public interface ProductApi {
+    /**
+     * 请求购物车接口
+     * @param params 头部入参
+     * @return
+     */
     @GET(Api.GET_CART_URL)
     Observable<CartEntity> getCarts(@HeaderMap HashMap<String,String> params);
 }

@@ -7,11 +7,18 @@ import java.util.HashMap;
 
 public interface CartContract {
 
+    /**
+     * 逻辑层
+     */
     interface ICartPresenter{
 
         void getCarts(HashMap<String,String> params);
 
     }
+
+    /**
+     * 数据模型层
+     */
     interface ICartModel{
 
         void getCarts(HashMap<String,String> params,NetCallback netCallback);
@@ -19,6 +26,10 @@ public interface CartContract {
 
 
     }
+
+    /**
+     * view层
+     */
     interface ICartView{
 
         void success(CartEntity cartEntity);

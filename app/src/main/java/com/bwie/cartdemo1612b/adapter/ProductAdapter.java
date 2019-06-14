@@ -46,9 +46,9 @@ public class ProductAdapter extends XRecyclerView.Adapter<ProductAdapter.MyHolde
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
         final CartEntity.Result.Product product = productList.get(i);
-        if (product.productChecked){
+        if (product.productChecked){//二级商品选中
             myHolder.checkBox.setChecked(true);
-        }else{
+        }else{//取消
             myHolder.checkBox.setChecked(false);
         }
         myHolder.priceTv.setText(product.price);
@@ -67,7 +67,7 @@ public class ProductAdapter extends XRecyclerView.Adapter<ProductAdapter.MyHolde
             @Override
             public void onClick(View v) {
 //                myHolder.numIv.setText(product.num+"");
-                product.num++;
+                product.num++;//数量加
                 notifyDataSetChanged();
             }
         });

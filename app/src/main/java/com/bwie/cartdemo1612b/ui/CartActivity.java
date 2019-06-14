@@ -30,7 +30,6 @@ import butterknife.Unbinder;
 
 public class CartActivity extends AppCompatActivity implements XRecyclerView.LoadingListener, CartContract.ICartView ,CartAdapter.notifyCart{
 
-
     @BindView(R.id.rv_cart)
     XRecyclerView xRecyclerView;
 
@@ -64,11 +63,13 @@ public class CartActivity extends AppCompatActivity implements XRecyclerView.Loa
 
         cartPresenter.getCarts(params);
 //        }else{//无网
+        //得到实体类的dao对象
         CartBeanDao cartBeanDao = GreenDaoUtils.getInstance().getDaoSession().getCartBeanDao();
-        List<CartBean> cartBeans = cartBeanDao.queryBuilder().list();
+        List<CartBean> cartBeans = cartBeanDao.queryBuilder().list();//遍历所有数据
         if (cartBeans != null && cartBeans.size() > 0) {
-            CartBean cartBean = cartBeans.get(0);
-            String result = cartBean.getJson();
+            CartBean cartBean = cartBeans.get(0);//得到第一条数据
+            String result = cartBean.getJson();//得到json结构
+            //转换成实体类
             CartEntity cartEntity = new Gson().fromJson(result, CartEntity.class);
             fillData(cartEntity);
         }
@@ -117,22 +118,22 @@ public class CartActivity extends AppCompatActivity implements XRecyclerView.Loa
 //            }
 //        }
 
-        if (checkBox.isChecked()){//全选
+        if (checkBox.isChecked()){//全选的时候
             for (CartEntity.Result result : cartAdapter.getCartList()) {
 
-                result.cartChecked = true;
+                result.cartChecked = true;//设置一级选中状态
                 for (CartEntity.Result.Product product : result.shoppingCartList) {
-                    product.productChecked = true;
+                    product.productChecked = true;//设置二级选中状态
                 }
             }
             allPrice(true);
 
-        }else{
+        }else{//反选
             for (CartEntity.Result result : cartAdapter.getCartList()) {
 
-                result.cartChecked = false;
+                result.cartChecked = false;//一级取消选中
                 for (CartEntity.Result.Product product : result.shoppingCartList) {
-                    product.productChecked = false;
+                    product.productChecked = false;//二级取消选中
                 }
             }
             allPrice(false);
@@ -151,6 +152,7 @@ public class CartActivity extends AppCompatActivity implements XRecyclerView.Loa
      */
     private void allPrice(boolean b) {
         double totalPrices = 0;
+        //遍历所有数据，得到价格汇总计算
         for (CartEntity.Result result : cartAdapter.getCartList()) {
 
             for (CartEntity.Result.Product product : result.shoppingCartList) {
@@ -158,10 +160,10 @@ public class CartActivity extends AppCompatActivity implements XRecyclerView.Loa
                 totalPrices += Double.parseDouble(product.price);
             }
         }
-        if (!b){
+        if (!b){//未选中时
             totalPrices = 0;
         }
-        totalPrice.setText(totalPrices+"");
+        totalPrice.setText(totalPrices+"");//选牛时
     }
 
     /**
@@ -170,27 +172,39 @@ public class CartActivity extends AppCompatActivity implements XRecyclerView.Loa
     @Override
     public void onRefresh() {
 
+        xRecyclerView.refreshComplete();
+
     }
 
     /**
-     * 加载跟多
+     * 加载更多
      */
     @Override
     public void onLoadMore() {
+
+        xRecyclerView.loadMoreComplete();
 
     }
 
     @Override
     public void success(CartEntity cartEntity) {
+        //填充数据
         fillData(cartEntity);
+        //请求成功后，缓存到greedao
+        saveData(cartEntity);
 
 
+    }
+
+    /**
+     * 保存到数据库
+     * @param cartEntity
+     */
+    private void saveData(CartEntity cartEntity) {
         String result = new Gson().toJson(cartEntity);//
         CartBean cartBean = new CartBean();
         cartBean.setJson(result);
         GreenDaoUtils.getInstance().getDaoSession().getCartBeanDao().insert(cartBean);//把返回的json串保存到sqlite
-
-
     }
 
     @Override

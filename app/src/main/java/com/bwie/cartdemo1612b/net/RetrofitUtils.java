@@ -13,18 +13,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class RetrofitUtils {
 
-    private static RetrofitUtils mInstance;
+    private static RetrofitUtils mInstance;//私有静态
     private Retrofit retrofit;
 
-    private RetrofitUtils(){
+    private RetrofitUtils(){//私有构造方法
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                //日志拦截器
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();
         retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(okHttpClient)//关联ok
+                .addConverterFactory(GsonConverterFactory.create())//添加Gson数据转换器
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())//添加请求回调适配器
                 .build();
 
     }
