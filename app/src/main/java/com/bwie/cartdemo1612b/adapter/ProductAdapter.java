@@ -18,8 +18,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.bwie.cartdemo1612b.R;
 import com.bwie.cartdemo1612b.entity.CartEntity;
+import com.google.gson.Gson;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,6 +30,11 @@ import butterknife.ButterKnife;
 public class ProductAdapter extends XRecyclerView.Adapter<ProductAdapter.MyHolder> {
     private List<CartEntity.Result.Product>  productList;
     private Context context;
+    private OnItemclickListener onItemclickListener;
+
+    public void setOnItemclickListener(OnItemclickListener onItemclickListener) {
+        this.onItemclickListener = onItemclickListener;
+    }
 
     public ProductAdapter(Context ctx, List<CartEntity.Result.Product> cartList) {
         this.productList = cartList;
@@ -44,7 +51,7 @@ public class ProductAdapter extends XRecyclerView.Adapter<ProductAdapter.MyHolde
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
+    public void onBindViewHolder(@NonNull final MyHolder myHolder, final int i) {
         final CartEntity.Result.Product product = productList.get(i);
         if (product.productChecked){//二级商品选中
             myHolder.checkBox.setChecked(true);
@@ -56,7 +63,7 @@ public class ProductAdapter extends XRecyclerView.Adapter<ProductAdapter.MyHolde
         myHolder.numIv.setText(product.num+"");
 
         //首选项，配置选项
-        RequestOptions options = new RequestOptions();
+        final RequestOptions options = new RequestOptions();
         options.placeholder(R.drawable.ic_launcher_background)
                 .error(R.drawable.ic_launcher_background)
         .transform(new RoundedCorners(5));//5像素圆角
@@ -96,6 +103,33 @@ public class ProductAdapter extends XRecyclerView.Adapter<ProductAdapter.MyHolde
             }
         });
 
+        myHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemclickListener!=null){
+                    onItemclickListener.onItemClick(i,myHolder.itemView,product);//位置和当前view
+                }
+            }
+        });
+        myHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (onItemclickListener!=null){
+                    onItemclickListener.onLongItemClick(i,myHolder.itemView);//位置和当前view
+                }
+                return false;
+            }
+        });
+
+//        myHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                List<CartEntity.Result.Product> list = new ArrayList<>();
+//                list.add(product);
+//                System.out.println(""+new Gson().toJson(list));
+//            }
+//        });
+
 
 
 
@@ -127,5 +161,10 @@ public class ProductAdapter extends XRecyclerView.Adapter<ProductAdapter.MyHolde
             super(itemView);
             ButterKnife.bind(this,itemView);
         }
+    }
+
+    public interface OnItemclickListener{
+        void onItemClick(int pos, View itemView, CartEntity.Result.Product product);
+        void onLongItemClick(int pos,View itemView);
     }
 }

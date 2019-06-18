@@ -3,12 +3,14 @@ package com.bwie.cartdemo1612b.ui;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.EventLog;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.bwie.cartdemo1612b.R;
 import com.bwie.cartdemo1612b.adapter.CartAdapter;
+import com.bwie.cartdemo1612b.adapter.ProductAdapter;
 import com.bwie.cartdemo1612b.contract.CartContract;
 import com.bwie.cartdemo1612b.entity.CartBean;
 import com.bwie.cartdemo1612b.entity.CartEntity;
@@ -18,6 +20,7 @@ import com.bwie.cartdemo1612b.utils.GreenDaoUtils;
 import com.google.gson.Gson;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.w3c.dom.Text;
 
 import java.util.HashMap;
@@ -28,7 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class CartActivity extends AppCompatActivity implements XRecyclerView.LoadingListener, CartContract.ICartView ,CartAdapter.notifyCart{
+public class CartActivity extends AppCompatActivity implements XRecyclerView.LoadingListener, CartContract.ICartView ,CartAdapter.notifyCart, ProductAdapter.OnItemclickListener {
 
     @BindView(R.id.rv_cart)
     XRecyclerView xRecyclerView;
@@ -58,8 +61,8 @@ public class CartActivity extends AppCompatActivity implements XRecyclerView.Loa
 
 //        if (){//有网
         HashMap<String, String> params = new HashMap<>();
-        params.put("userId", "159");
-        params.put("sessionId", "1560500587000159");
+        params.put("userId","6366");
+        params.put("sessionId","15605649738176366");
 
         cartPresenter.getCarts(params);
 //        }else{//无网
@@ -87,6 +90,7 @@ public class CartActivity extends AppCompatActivity implements XRecyclerView.Loa
      */
     private void fillData(CartEntity cartEntity) {
         cartAdapter = new CartAdapter(this, cartEntity.result);
+
         cartAdapter.setNotifyCart(this);
         xRecyclerView.setAdapter(cartAdapter);
 
@@ -225,6 +229,29 @@ public class CartActivity extends AppCompatActivity implements XRecyclerView.Loa
      */
     @Override
     public void isCheced(boolean b) {
+
+    }
+
+    /**
+     * 点击事件
+     * @param pos
+     * @param itemView
+     */
+    @Override
+    public void onItemClick(int pos, View itemView, CartEntity.Result.Product product) {
+
+
+        EventBus.getDefault().postSticky(product.commodityId);
+
+    }
+
+    /**
+     * 长按事件
+     * @param pos
+     * @param itemView
+     */
+    @Override
+    public void onLongItemClick(int pos, View itemView) {
 
     }
 }
